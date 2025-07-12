@@ -3,8 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Code Generator | Adlai Dyson | Fused Frame Photography</title>
+  <title>QR Code Generator</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e374d;
+      color: #94fdf8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      background: #1e374d;
+      border: 2px solid #94fdf8;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 20px rgba(148, 253, 248, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 1rem;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 0.5rem;
+      background: transparent;
+      color: #94fdf8;
+      border: 1px solid #94fdf8;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tabs button.active,
+    .tabs button:hover {
+      background: #94fdf8;
+      color: #1e374d;
+    }
+
+    input, select {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #94fdf8;
+      background: #142937;
+      color: #94fdf8;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      background: #94fdf8;
+      color: #1e374d;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .footer a {
+      color: #94fdf8;
+      text-decoration: underline;
+    }
+
+    .footer a:visited {
+      color: #94fdf8;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -23,20 +121,74 @@
       <input type="text" id="ssid" placeholder="WiFi SSID" oninput="generateQR()" />
       <input type="text" id="password" placeholder="WiFi Password" oninput="generateQR()" />
       <select id="encryption" onchange="generateQR()">
-        <option value="WPA">WPA/WPA2/WPA3</option>
+        <option value="WPA">WPA/WPA2</option>
         <option value="WEP">WEP</option>
         <option value="nopass">None</option>
       </select>
     </div>
 
-     <button onclick="downloadQR()">⬇️ Download QR</button>
-    <footer class="footer">
-      © <span id="year"></span> Made by <a href="https://adlaidyson.co.uk" target="_blank">Adlai Dyson</a> |
-      <a href="https://fusedframe.co.uk" target="_blank">Fused Frame Photography</a>
-    </footer>
+    <div id="qrcode"></div>
+    <button onclick="downloadQR()">⬇️ Download QR</button>
   </div>
 
+  <footer class="footer">
+    © <span id="year"></span> <a href="https://adlaidyson.co.uk" target="_blank">Made by Adlai Dyson | Fused Frame Photography</a>
+  </footer>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    let currentTab = "link";
+    let qr;
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById("linkTab").classList.toggle("hidden", tab !== "link");
+      document.getElementById("wifiTab").classList.toggle("hidden", tab !== "wifi");
+
+      document.querySelectorAll(".tabs button").forEach(btn => btn.classList.remove("active"));
+      document.querySelector(`.tabs button[onclick="switchTab('${tab}')"]`).classList.add("active");
+
+      generateQR();
+    }
+
+    function generateQR() {
+      const container = document.getElementById("qrcode");
+      container.innerHTML = "";
+
+      let qrData = "";
+      if (currentTab === "link") {
+        const url = document.getElementById("linkInput").value.trim();
+        if (!url) return;
+        qrData = url;
+      } else {
+        const ssid = document.getElementById("ssid").value;
+        const pass = document.getElementById("password").value;
+        const enc = document.getElementById("encryption").value;
+        qrData = `WIFI:T:${enc};S:${ssid};P:${pass};H:false;;`;
+      }
+
+      qr = new QRCode(container, {
+        text: qrData,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function downloadQR() {
+      if (!qr) return;
+      const img = document.querySelector("#qrcode img");
+      if (!img) return;
+      const link = document.createElement("a");
+      link.href = img.src;
+      link.download = "qr-code.png";
+      link.click();
+    }
+
+    // Set footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
