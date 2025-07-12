@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Generator | Adlai Dyson | Fused Frame Photography</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>QR Code Generator</h1>
+    
+    <div class="tabs">
+      <button onclick="switchTab('link')" class="active">🔗 Link</button>
+      <button onclick="switchTab('wifi')">📶 WiFi</button>
+    </div>
+
+    <div id="linkTab" class="tabContent">
+      <input type="text" id="linkInput" placeholder="Enter URL (https://...)" oninput="generateQR()" />
+    </div>
+
+    <div id="wifiTab" class="tabContent hidden">
+      <input type="text" id="ssid" placeholder="WiFi SSID" oninput="generateQR()" />
+      <input type="text" id="password" placeholder="WiFi Password" oninput="generateQR()" />
+      <select id="encryption" onchange="generateQR()">
+        <option value="WPA">WPA/WPA2/WPA3</option>
+        <option value="WEP">WEP</option>
+        <option value="nopass">None</option>
+      </select>
+    </div>
+
+    <div id="qrcode"></div>
+    <button onclick="downloadQR()">⬇️ Download QR</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
