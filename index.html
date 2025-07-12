@@ -16,6 +16,8 @@
       background-color: #1e374d;
       color: #94fdf8;
       min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -25,11 +27,11 @@
       background: #1e374d;
       border: 2px solid #94fdf8;
       border-radius: 16px;
-      padding: 2rem;
+      padding: 2rem 1rem;
       max-width: 420px;
-      width: 90%;
+      width: 100%;
       box-shadow: 0 0 20px rgba(148, 253, 248, 0.2);
-      margin: 2rem 0;
+      margin: 2rem auto 1rem auto;
     }
 
     h1 {
@@ -42,10 +44,11 @@
       display: flex;
       gap: 1rem;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
 
     .tabs button {
-      flex: 1;
+      flex: 1 1 40%;
       padding: 0.6rem;
       background: transparent;
       color: #94fdf8;
@@ -102,11 +105,19 @@
       display: none;
     }
 
+    .share-btn {
+      max-width: 420px;
+      width: 100%;
+      margin: 1rem auto 0 auto;
+      padding: 0 1rem;
+    }
+
     .footer {
       text-align: center;
       font-size: 0.85rem;
       padding: 1rem;
       margin-top: auto;
+      width: 100%;
     }
 
     .footer a {
@@ -154,6 +165,10 @@
 
     <div id="qrcode"></div>
     <button onclick="downloadQR()">⬇️ Download QR</button>
+  </div>
+
+  <div class="share-btn">
+    <button onclick="shareQR()">📤 Share This Tool</button>
   </div>
 
   <footer class="footer">
@@ -210,6 +225,24 @@
       link.href = img.src;
       link.download = "qr-code.png";
       link.click();
+    }
+
+    async function shareQR() {
+      try {
+        const shareData = {
+          title: 'QR Code Generator by Adlai Dyson',
+          text: 'Generate QR codes for links and WiFi easily!',
+          url: window.location.href
+        };
+
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else {
+          alert("Sharing is not supported in this browser.");
+        }
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
     }
 
     document.getElementById("year").textContent = new Date().getFullYear();
