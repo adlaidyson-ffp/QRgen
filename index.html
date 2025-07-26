@@ -104,11 +104,14 @@
       display: none;
     }
 
-    .share-btn {
+    .tool-buttons {
       max-width: 420px;
       width: 100%;
       margin: 1rem auto 0 auto;
       padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem; /* Added gap for spacing between buttons */
     }
 
     .footer {
@@ -166,8 +169,9 @@
     <button onclick="downloadQR()">⬇️ Download QR</button>
   </div>
 
-  <div class="share-btn">
+  <div class="tool-buttons">
     <button onclick="shareQR()">📤 Share This Tool</button>
+    <button onclick="learnMoreAboutTool()">ℹ️ Learn More About This Tool</button>
   </div>
 
   <footer class="footer">
@@ -242,6 +246,11 @@
       } catch (err) {
         console.error('Error sharing:', err);
       }
+    }
+
+    function learnMoreAboutTool() {
+      // Replace 'your-about-page-url.html' with the actual URL of your "Learn More" page
+      window.open('https://adlaidyson.co.uk/qr-code-generator/', '_blank');
     }
 
     document.getElementById("year").textContent = new Date().getFullYear();
