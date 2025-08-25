@@ -9,6 +9,7 @@ A modern, responsive, and easy to use web-based QR Code Generator. This tool all
     * Upload a custom logo to embed in the center of the QR code.
 * **Multiple Download Formats**: Download your generated QR code as a PNG, SVG, or JPEG file.
 * **Responsive Design**: The interface is fully responsive, ensuring a seamless user experience on both desktop and mobile devices.
+* **Can save choices**: Selecting Save Choices allows you to keep the colours and options you select everytime you visit the site!
 
 ## 🚀 How to Use
 Simply open the [web page](https://qr.adlaidyson.co.uk) and start customizing your QR code.
