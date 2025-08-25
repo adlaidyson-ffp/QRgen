@@ -38,7 +38,7 @@
   }
 
   .generator-layout {
-    display: grid; grid-template-columns: 1fr; gap: 1.5rem; /* FIX: gap reduced for mobile */
+    display: grid; grid-template-columns: 1fr; gap: 1.5rem;
     max-width: 1000px; width: 100%; margin: 0 auto;
   }
 
@@ -49,7 +49,7 @@
 
   .controls-panel fieldset {
     border: 1px solid var(--border-color); border-radius: 12px;
-    padding: 1rem; /* FIX: smaller padding */
+    padding: 1rem;
     margin-bottom: 1.5rem; background-color: var(--secondary-bg);
   }
   
@@ -58,29 +58,36 @@
     font-weight: 600; color: var(--accent-color);
   }
 
-  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; } /* FIX: smaller gap on mobile */
+  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
   .tabs button {
-    flex-grow: 1; padding: 0.65rem; /* FIX: slightly smaller */
+    flex-grow: 1; padding: 0.65rem;
     background: transparent; color: var(--accent-color);
     border: 1px solid var(--accent-color); border-radius: 8px; cursor: pointer;
     transition: background 0.3s, color 0.3s; font-size: 0.95rem; font-weight: 500;
   }
 
   input, select {
-    width: 100%; margin-bottom: 1rem; padding: 0.65rem; /* FIX: smaller padding */
+    width: 100%; margin-bottom: 1rem; padding: 0.65rem;
     border-radius: 8px;
     border: 1px solid var(--accent-color); background: var(--primary-bg);
     color: var(--text-color); font-size: 1rem;
   }
 
   .options-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* FIX: narrower for small screens */
-    gap: 1rem; /* FIX: less gap */
-    align-items: center;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    align-items: start;
   }
   .option-item { display: flex; flex-direction: column; }
   .option-item label { margin-bottom: 0.5rem; font-size: 0.9rem; }
-  .checkbox-container { display: flex; align-items: center; gap: 0.5rem; margin-top: 10px; }
+  
+  /* The core fix for the checkbox layout */
+  .checkbox-container { 
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
 
   .logo-controls { display: flex; gap: 0.5rem; flex-direction: column; }
   .logo-btn {
@@ -96,22 +103,24 @@
 
   .output-panel {
     background: var(--secondary-bg); border: 1px solid var(--border-color);
-    border-radius: 12px; padding: 1.2rem; /* FIX: smaller padding */
+    border-radius: 12px; padding: 1.2rem;
     display: flex; flex-direction: column;
   }
   #qrcode {
     display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;
-    padding: 0.5rem; /* FIX: smaller padding */
-    background-color: white; border-radius: 10px;
-    max-width: 100%; /* FIX: ensure QR never overflows */
+    padding: 0.5rem;
+    background-color: transparent; /* Changed from white to transparent */
+    border: 1px solid rgba(0,0,0,0.1); /* Added a slight border to distinguish the box */
+    border-radius: 10px;
+    max-width: 100%;
     overflow: hidden;
   }
-  #qrcode canvas, #qrcode img { max-width: 100%; height: auto; } /* FIX: QR fits screen */
+  #qrcode canvas, #qrcode img { max-width: 100%; height: auto; }
 
-  .download-section { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: auto; } /* FIX: wrap on mobile */
+  .download-section { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: auto; }
   .download-section select { flex-basis: 120px; margin-bottom: 0; }
   .main-button {
-    flex: 1; min-width: 150px; /* FIX: allow button to shrink */
+    flex: 1; min-width: 150px;
     padding: 0.75rem; border: none; background: var(--accent-color);
     color: var(--primary-bg); font-weight: bold; border-radius: 10px; cursor: pointer;
     font-size: 1rem; transition: transform 0.2s;
@@ -133,14 +142,55 @@
 
   /* Coloris color picker styling */
   .clr-field {
-    width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--accent-color);
-    background: var(--primary-bg); color: var(--text-color); font-size: 1rem;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent-color);
+    background: var(--primary-bg);
+    color: var(--text-color);
+    font-size: 1rem;
   }
   .clr-field:focus { outline: 2px solid var(--accent-color); }
+
+  /* Hide the color swatch button and adjust padding */
   .clr-field button {
-    width: 1.8rem; height: 1.8rem; /* FIX: smaller swatch to match input */
+    display: none;
+  }
+
+  /* Checkbox styling */
+  .checkbox-container input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--accent-color);
     border-radius: 4px;
-    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    background-color: var(--primary-bg);
+    margin-bottom: 0;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  .checkbox-container input[type="checkbox"]:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  .checkbox-container input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-bg);
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .checkbox-container label {
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+    line-height: 1.2;
   }
 
   /* Extra responsiveness for small phones */
@@ -202,6 +252,13 @@
             <div class="checkbox-container">
               <input type="checkbox" id="transparent-bg" />
               <label for="transparent-bg">Transparent</label>
+            </div>
+          </div>
+          <div class="option-item">
+            <label>Settings</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="save-settings" />
+              <label for="save-settings">Save Settings</label>
             </div>
           </div>
         </div>
@@ -266,6 +323,7 @@
       const removeLogoBtn = document.getElementById('remove-logo');
       const logoInfo = document.getElementById('logo-info');
       const qrSizeSelect = document.getElementById('qr-size');
+      const saveSettingsCheckbox = document.getElementById('save-settings');
 
       const inputsToWatch = [
         "linkInput", "ssid", "password", "encryption", "color-fg", 
@@ -290,24 +348,43 @@
       wifiBtn.addEventListener("click", () => switchTab("wifi"));
       downloadBtn.addEventListener("click", downloadQR);
       shareBtn.addEventListener("click", shareTool);
+      saveSettingsCheckbox.addEventListener('change', () => {
+        if (saveSettingsCheckbox.checked) {
+          saveSettings();
+        } else {
+          localStorage.removeItem('qrCodeSettings');
+        }
+      });
 
       transparentBgCheckbox.addEventListener('change', () => {
         bgColorInput.disabled = transparentBgCheckbox.checked;
         updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
       });
+
       logoUploadInput.addEventListener('change', handleLogoUpload);
-      removeLogoBtn.addEventListener('click', removeLogo);
+      removeLogoBtn.addEventListener('click', () => {
+        removeLogo();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      });
 
       inputsToWatch.forEach(id => {
         const element = document.getElementById(id);
-        // Using 'change' for color picker and select, 'input' for text fields
         const eventType = (element.type === 'color' || element.tagName === 'SELECT') ? 'change' : 'input';
-        element.addEventListener(eventType, debounce(updateQR, 250));
+        element.addEventListener(eventType, debounce(() => {
+          updateQR();
+          if(saveSettingsCheckbox.checked) saveSettings();
+        }, 250));
       });
-      // Special listener for color picker input to catch typed changes
-      document.getElementById('color-fg').addEventListener('input', debounce(updateQR, 250));
-      document.getElementById('color-bg').addEventListener('input', debounce(updateQR, 250));
-
+      
+      document.getElementById('color-fg').addEventListener('input', debounce(() => {
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }, 250));
+      document.getElementById('color-bg').addEventListener('input', debounce(() => {
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }, 250));
 
       // --- Main Functions ---
       function switchTab(tab) {
@@ -317,6 +394,7 @@
         linkTab.classList.toggle("hidden", tab !== "link");
         wifiTab.classList.toggle("hidden", tab !== "wifi");
         updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
       }
 
       function getQRData() {
@@ -350,12 +428,13 @@
         logoInfo.textContent = `Active: ${file.name}`;
         removeLogoBtn.classList.remove('hidden');
         updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
       }
 
       function removeLogo() {
         if (logoUrl) URL.revokeObjectURL(logoUrl);
         logoUrl = null;
-        logoUploadInput.value = null; // Clear the file input
+        logoUploadInput.value = null;
         logoInfo.textContent = '';
         removeLogoBtn.classList.add('hidden');
         updateQR();
@@ -367,7 +446,7 @@
       }
 
       async function shareTool(event) {
-        event.preventDefault(); // Prevent the <a> tag's default behavior
+        event.preventDefault();
         const shareData = {
           title: 'QR Code Generator',
           text: 'Check out this awesome QR Code Generator by Adlai Dyson!',
@@ -384,7 +463,6 @@
         }
       }
 
-      // Debounce utility to prevent rapid-fire updates
       function debounce(func, delay) {
         let timeout;
         return (...args) => {
@@ -393,6 +471,67 @@
         };
       }
 
+      // --- Local Storage Functions ---
+      function saveSettings() {
+        const settings = {
+          tab: currentTab,
+          link: document.getElementById('linkInput').value,
+          ssid: document.getElementById('ssid').value,
+          password: document.getElementById('password').value,
+          encryption: document.getElementById('encryption').value,
+          fgColor: document.getElementById('color-fg').value,
+          bgColor: document.getElementById('color-bg').value,
+          qrSize: document.getElementById('qr-size').value,
+          transparentBg: transparentBgCheckbox.checked
+        };
+        localStorage.setItem('qrCodeSettings', JSON.stringify(settings));
+      }
+
+      function loadSettings() {
+        const settings = localStorage.getItem('qrCodeSettings');
+        if (settings) {
+          const parsedSettings = JSON.parse(settings);
+          
+          saveSettingsCheckbox.checked = true;
+          
+          if (parsedSettings.tab) {
+            switchTab(parsedSettings.tab);
+          }
+          if (parsedSettings.link) {
+            document.getElementById('linkInput').value = parsedSettings.link;
+          }
+          if (parsedSettings.ssid) {
+            document.getElementById('ssid').value = parsedSettings.ssid;
+          }
+          if (parsedSettings.password) {
+            document.getElementById('password').value = parsedSettings.password;
+          }
+          if (parsedSettings.encryption) {
+            document.getElementById('encryption').value = parsedSettings.encryption;
+          }
+          if (parsedSettings.fgColor) {
+            document.getElementById('color-fg').value = parsedSettings.fgColor;
+            document.getElementById('color-fg').dispatchEvent(new Event('input'));
+          }
+          if (parsedSettings.bgColor) {
+            document.getElementById('color-bg').value = parsedSettings.bgColor;
+            document.getElementById('color-bg').dispatchEvent(new Event('input'));
+          }
+          if (parsedSettings.qrSize) {
+            document.getElementById('qr-size').value = parsedSettings.qrSize;
+          }
+          if (parsedSettings.transparentBg) {
+            transparentBgCheckbox.checked = true;
+            bgColorInput.disabled = true;
+          }
+
+          // Initial QR update after loading settings
+          updateQR();
+        }
+      }
+
+      // Load settings on page load
+      loadSettings();
       document.getElementById("year").textContent = new Date().getFullYear();
     });
   </script>
