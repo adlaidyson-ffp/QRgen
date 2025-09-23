@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/adlaidyson-ffp/FFPMisc2/refs/heads/main/QRCodeGenFavicon.jpg">
+  
+  <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+  <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+
+  <style>
+  :root {
+    --primary-bg: #111827;
+    --secondary-bg: #1e374d;
+    --accent-color: #94fdf8;
+    --text-color: #ffffff;
+    --border-color: rgba(148, 253, 248, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    padding: 1rem;
+  }
+
+  h1 {
+    text-align: center; margin-bottom: 2rem; font-size: 2.2rem;
+    color: var(--accent-color); text-shadow: 0 0 5px var(--accent-color);
+  }
+
+  .generator-layout {
+    display: grid; grid-template-columns: 1fr; gap: 1.5rem;
+    max-width: 1000px; width: 100%; margin: 0 auto;
+  }
+
+  @media (min-width: 800px) {
+    .generator-layout { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    .output-panel { position: sticky; top: 2rem; align-self: flex-start; }
+  }
+
+  .controls-panel fieldset {
+    border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem; background-color: var(--secondary-bg);
+  }
+  
+  .controls-panel legend {
+    padding: 0 0.5rem; font-size: 1.1rem;
+    font-weight: 600; color: var(--accent-color);
+  }
+
+  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .tabs button {
+    flex-grow: 1; padding: 0.65rem;
+    background: transparent; color: var(--accent-color);
+    border: 1px solid var(--accent-color); border-radius: 8px; cursor: pointer;
+    transition: background 0.3s, color 0.3s; font-size: 0.95rem; font-weight: 500;
+  }
+
+  input, select {
+    width: 100%; margin-bottom: 1rem; padding: 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent-color); background: var(--primary-bg);
+    color: var(--text-color); font-size: 1rem;
+  }
+
+  .options-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .option-item { display: flex; flex-direction: column; }
+  .option-item label { margin-bottom: 0.5rem; font-size: 0.9rem; }
+  
+  /* The core fix for the checkbox layout */
+  .checkbox-container { 
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
+
+  .logo-controls { display: flex; gap: 0.5rem; flex-direction: column; }
+  .logo-btn {
+    border: 1px solid var(--accent-color); color: var(--accent-color); background-color: transparent;
+    padding: 0.65rem; border-radius: 8px; font-size: 1rem; width: 100%; text-align: center; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .logo-btn:hover { background-color: var(--accent-color); color: var(--primary-bg); }
+  .logo-btn.remove { border-color: #ff6b6b; color: #ff6b6b; }
+  .logo-btn.remove:hover { background-color: #ff6b6b; color: var(--text-color); }
+  input[type="file"] { display: none; }
+  #logo-info { font-size: 0.8rem; text-align: center; margin-top: 0.5rem; word-break: break-all; }
+
+  .output-panel {
+    background: var(--secondary-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.2rem;
+    display: flex; flex-direction: column;
+  }
+  #qrcode {
+    display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;
+    padding: 0.5rem;
+    background-color: transparent; /* Changed from white to transparent */
+    border: 1px solid rgba(0,0,0,0.1); /* Added a slight border to distinguish the box */
+    border-radius: 10px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  #qrcode canvas, #qrcode img { max-width: 100%; height: auto; }
+
+  .download-section { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: auto; }
+  .download-section select { flex-basis: 120px; margin-bottom: 0; }
+  .main-button {
+    flex: 1; min-width: 150px;
+    padding: 0.75rem; border: none; background: var(--accent-color);
+    color: var(--primary-bg); font-weight: bold; border-radius: 10px; cursor: pointer;
+    font-size: 1rem; transition: transform 0.2s;
+  }
+  .main-button:hover { transform: scale(1.02); }
+
+  .hidden { display: none; }
+  
+  .footer { text-align: center; padding: 2rem 1rem 1rem 1rem; max-width: 500px; margin: 2rem auto 0 auto;}
+  .footer-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem; justify-content: center; }
+  .footer-btn {
+    flex: 1 1 140px; padding: 0.65rem; color: var(--accent-color); border: 1px solid var(--accent-color);
+    border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s; text-align: center;
+  }
+  .footer-btn:hover { background-color: var(--accent-color); color: var(--primary-bg); }
+  .footer-logo { max-width: 220px; width: 100%; height: auto; margin-bottom: 1rem; }
+  .footer-text a { color: var(--accent-color); text-decoration: none; }
+  .footer-text a:hover { text-decoration: underline; }
+
+  /* Coloris color picker styling */
+  .clr-field {
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent-color);
+    background: var(--primary-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+  }
+  .clr-field:focus { outline: 2px solid var(--accent-color); }
+
+  /* Hide the color swatch button and adjust padding */
+  .clr-field button {
+    display: none;
+  }
+
+  /* Checkbox styling */
+  .checkbox-container input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background-color: var(--primary-bg);
+    margin-bottom: 0;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  .checkbox-container input[type="checkbox"]:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  .checkbox-container input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-bg);
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .checkbox-container label {
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  /* Extra responsiveness for small phones */
+  @media (max-width: 480px) {
+    h1 { font-size: 1.6rem; }
+    .tabs button { font-size: 0.85rem; padding: 0.5rem; }
+    input, select { font-size: 0.9rem; }
+    .main-button { font-size: 0.95rem; }
+  }
+</style>
+
+</head>
+<body>
+  <h1>QR Code Generator</h1>
+  <div class="generator-layout">
+    <div class="controls-panel">
+      <fieldset>
+        <legend>🔗 Content</legend>
+        <div class="tabs">
+          <button id="linkBtn" class="active">🔗 Link</button>
+          <button id="wifiBtn">📶 WiFi</button>
+        </div>
+        <div id="linkTab">
+          <input type="text" id="linkInput" placeholder="Enter URL (https://...)" />
+        </div>
+        <div id="wifiTab" class="hidden">
+          <input type="text" id="ssid" placeholder="WiFi SSID (Network Name)" />
+          <input type="password" id="password" placeholder="WiFi Password" />
+          <select id="encryption">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">No Password</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>🎨 Design</legend>
+        <div class="options-grid">
+          <div class="option-item">
+            <label for="color-fg">QR Code Color</label>
+            <input type="text" id="color-fg" value="#000000" data-coloris>
+          </div>
+          <div class="option-item">
+            <label for="color-bg">Background Color</label>
+            <input type="text" id="color-bg" value="#ffffff" data-coloris>
+          </div>
+          <div class="option-item">
+            <label>Quality / Size</label>
+            <select id="qr-size">
+              <option value="200">Low (200px)</option>
+              <option value="400" selected>Medium (400px)</option>
+              <option value="800">High (800px)</option>
+              <option value="1600">Ultra (1600px)</option>
+            </select>
+          </div>
+          <div class="option-item">
+            <label>Background</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="transparent-bg" />
+              <label for="transparent-bg">Transparent</label>
+            </div>
+          </div>
+          <div class="option-item">
+            <label>Settings</label>
+            <div class="checkbox-container">
+              <input type="checkbox" id="save-settings" />
+              <label for="save-settings">Save Choices</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>🖼️ Logo</legend>
+        <div class="logo-controls">
+          <label for="logo-upload" class="logo-btn">Upload Logo</label>
+          <input type="file" id="logo-upload" accept="image/png, image/jpeg, image/svg+xml">
+          <button id="remove-logo" class="logo-btn remove hidden">Remove Logo</button>
+          <p id="logo-info"></p>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="output-panel">
+      <div id="qrcode"></div>
+      <div class="download-section">
+        <select id="download-format">
+          <option value="png">PNG</option>
+          <option value="svg">SVG</option>
+          <option value="jpeg">JPEG</option>
+        </select>
+        <button class="main-button" id="downloadBtn">⬇️ Download QR Code</button>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <div class="footer-buttons">
+      <a href="#" id="shareBtn" class="footer-btn">Share This Tool</a>
+      <a href="https://redirect.adlaidyson.co.uk/qrgengithub" target="_blank" rel="noopener noreferrer" class="footer-btn">View on GitHub</a>
+    </div>
+    <img src="https://raw.githubusercontent.com/adlaidyson-ffp/assets/refs/heads/main/main-logos/png/Banner%20Logo%20(No%20Circle)%20Light%20(Transparent).png" alt="Adlai Dyson | Fused Frame Photography Banner Logo" class="footer-logo">
+    <div class="footer-text">
+      © <span id="year"></span> <a href="https://adlaidyson.co.uk" target="_blank" rel="noopener noreferrer">Made by Adlai Dyson | Fused Frame Photography</a>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // --- Initialize Color Picker ---
+      Coloris({
+        el: '[data-coloris]',
+        themeMode: 'dark',
+        alpha: false,
+        format: 'hex',
+      });
+      
+      // --- DOM Element References ---
+      const qrCodeContainer = document.getElementById("qrcode");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const shareBtn = document.getElementById("shareBtn");
+      const linkBtn = document.getElementById("linkBtn");
+      const wifiBtn = document.getElementById("wifiBtn");
+      const linkTab = document.getElementById("linkTab");
+      const wifiTab = document.getElementById("wifiTab");
+      const transparentBgCheckbox = document.getElementById('transparent-bg');
+      const bgColorInput = document.getElementById('color-bg');
+      const logoUploadInput = document.getElementById('logo-upload');
+      const removeLogoBtn = document.getElementById('remove-logo');
+      const logoInfo = document.getElementById('logo-info');
+      const qrSizeSelect = document.getElementById('qr-size');
+      const saveSettingsCheckbox = document.getElementById('save-settings');
+
+      const inputsToWatch = [
+        "linkInput", "ssid", "password", "encryption", "color-fg", 
+        "color-bg", "qr-size"
+      ];
+      let currentTab = "link";
+      let logoUrl = null;
+
+      // --- Initialize QR Code ---
+      const qrCode = new QRCodeStyling({
+        width: 400, height: 400,
+        data: "https://adlaidyson.co.uk",
+        dotsOptions: { color: "#000000", type: "rounded" },
+        backgroundOptions: { color: "#ffffff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 10, imageSize: 0.4 },
+        qrOptions: { errorCorrectionLevel: 'H' }
+      });
+      qrCode.append(qrCodeContainer);
+
+      // --- Event Listeners ---
+      linkBtn.addEventListener("click", () => switchTab("link"));
+      wifiBtn.addEventListener("click", () => switchTab("wifi"));
+      downloadBtn.addEventListener("click", downloadQR);
+      shareBtn.addEventListener("click", shareTool);
+      saveSettingsCheckbox.addEventListener('change', () => {
+        if (saveSettingsCheckbox.checked) {
+          saveSettings();
+        } else {
+          localStorage.removeItem('qrCodeSettings');
+        }
+      });
+
+      transparentBgCheckbox.addEventListener('change', () => {
+        bgColorInput.disabled = transparentBgCheckbox.checked;
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      });
+
+      logoUploadInput.addEventListener('change', handleLogoUpload);
+      removeLogoBtn.addEventListener('click', () => {
+        removeLogo();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      });
+
+      inputsToWatch.forEach(id => {
+        const element = document.getElementById(id);
+        const eventType = (element.type === 'color' || element.tagName === 'SELECT') ? 'change' : 'input';
+        element.addEventListener(eventType, debounce(() => {
+          updateQR();
+          if(saveSettingsCheckbox.checked) saveSettings();
+        }, 250));
+      });
+      
+      document.getElementById('color-fg').addEventListener('input', debounce(() => {
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }, 250));
+      document.getElementById('color-bg').addEventListener('input', debounce(() => {
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }, 250));
+
+      // --- Main Functions ---
+      function switchTab(tab) {
+        currentTab = tab;
+        linkBtn.classList.toggle("active", tab === "link");
+        wifiBtn.classList.toggle("active", tab === "wifi");
+        linkTab.classList.toggle("hidden", tab !== "link");
+        wifiTab.classList.toggle("hidden", tab !== "wifi");
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }
+
+      function getQRData() {
+        if (currentTab === "link") {
+          return document.getElementById("linkInput").value.trim() || "https://adlaidyson.co.uk";
+        }
+        const ssid = document.getElementById("ssid").value;
+        const pass = document.getElementById("password").value;
+        const enc = document.getElementById("encryption").value;
+        if (!ssid) return "WIFI:T:WPA;S:YourNetwork;P:YourPassword;;";
+        return `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+      }
+
+      function updateQR() {
+        const size = parseInt(qrSizeSelect.value, 10);
+        qrCode.update({
+          width: size,
+          height: size,
+          data: getQRData(),
+          dotsOptions: { color: document.getElementById("color-fg").value },
+          backgroundOptions: { color: transparentBgCheckbox.checked ? 'transparent' : bgColorInput.value },
+          image: logoUrl
+        });
+      }
+
+      function handleLogoUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (logoUrl) URL.revokeObjectURL(logoUrl);
+        logoUrl = URL.createObjectURL(file);
+        logoInfo.textContent = `Active: ${file.name}`;
+        removeLogoBtn.classList.remove('hidden');
+        updateQR();
+        if(saveSettingsCheckbox.checked) saveSettings();
+      }
+
+      function removeLogo() {
+        if (logoUrl) URL.revokeObjectURL(logoUrl);
+        logoUrl = null;
+        logoUploadInput.value = null;
+        logoInfo.textContent = '';
+        removeLogoBtn.classList.add('hidden');
+        updateQR();
+      }
+
+      function downloadQR() {
+        const format = document.getElementById("download-format").value;
+        qrCode.download({ name: "qr-code", extension: format });
+      }
+
+      async function shareTool(event) {
+        event.preventDefault();
+        const shareData = {
+          title: 'QR Code Generator',
+          text: 'Check out this awesome QR Code Generator by Adlai Dyson!',
+          url: window.location.href
+        };
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            alert("Sharing is not supported on this browser. Copy the link manually!");
+          }
+        } catch (err) {
+          console.error('Error sharing tool:', err);
+        }
+      }
+
+      function debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+      }
+
+      // --- Local Storage Functions ---
+      function saveSettings() {
+        const settings = {
+          tab: currentTab,
+          link: document.getElementById('linkInput').value,
+          ssid: document.getElementById('ssid').value,
+          password: document.getElementById('password').value,
+          encryption: document.getElementById('encryption').value,
+          fgColor: document.getElementById('color-fg').value,
+          bgColor: document.getElementById('color-bg').value,
+          qrSize: document.getElementById('qr-size').value,
+          transparentBg: transparentBgCheckbox.checked
+        };
+        localStorage.setItem('qrCodeSettings', JSON.stringify(settings));
+      }
+
+      function loadSettings() {
+        const settings = localStorage.getItem('qrCodeSettings');
+        if (settings) {
+          const parsedSettings = JSON.parse(settings);
+          
+          saveSettingsCheckbox.checked = true;
+          
+          if (parsedSettings.tab) {
+            switchTab(parsedSettings.tab);
+          }
+          if (parsedSettings.link) {
+            document.getElementById('linkInput').value = parsedSettings.link;
+          }
+          if (parsedSettings.ssid) {
+            document.getElementById('ssid').value = parsedSettings.ssid;
+          }
+          if (parsedSettings.password) {
+            document.getElementById('password').value = parsedSettings.password;
+          }
+          if (parsedSettings.encryption) {
+            document.getElementById('encryption').value = parsedSettings.encryption;
+          }
+          if (parsedSettings.fgColor) {
+            document.getElementById('color-fg').value = parsedSettings.fgColor;
+            document.getElementById('color-fg').dispatchEvent(new Event('input'));
+          }
+          if (parsedSettings.bgColor) {
+            document.getElementById('color-bg').value = parsedSettings.bgColor;
+            document.getElementById('color-bg').dispatchEvent(new Event('input'));
+          }
+          if (parsedSettings.qrSize) {
+            document.getElementById('qr-size').value = parsedSettings.qrSize;
+          }
+          if (parsedSettings.transparentBg) {
+            transparentBgCheckbox.checked = true;
+            bgColorInput.disabled = true;
+          }
+
+          // Initial QR update after loading settings
+          updateQR();
+        }
+      }
+
+      // Load settings on page load
+      loadSettings();
+      document.getElementById("year").textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>
