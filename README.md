@@ -12,7 +12,7 @@ A modern, responsive, and easy to use web-based QR Code Generator. This tool all
 * **Can save choices**: Selecting Save Choices allows you to keep the colours and options you select everytime you visit the site!
 
 ## 🚀 How to Use
-Simply open the [web page](https://qr.adlaidyson.co.uk) and start customizing your QR code.
+Simply open the [web page](https://qr.adlaidyson.co.uk) (hosted by Cloudflare Pages) and start customizing your QR code.
 
 1.  **Select Content Type**: Choose between the "Link" tab to enter a URL or the "Wi-Fi" tab to input network credentials (SSID, password, and encryption type).
 2.  **Customize Design**: Use the color pickers to change the QR code and background colors. You can also select the "Transparent" checkbox for a transparent background.
